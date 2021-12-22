@@ -5,4 +5,5 @@ export interface IActivationKeysRepository {
   find(id: string): Promise<MongoResultActivationKeys | null>;
   findByUserId(userId: string): Promise<MongoResultActivationKeys | null>;
   findAllUsedKeys(): Promise<MongoResultActivationKeys[] | null>;
+  saveAndUpdate(id: string, data: ActivationKeyDTO): Promise<void>;
 }

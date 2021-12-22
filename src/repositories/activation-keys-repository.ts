@@ -58,5 +58,26 @@ class ActivationKeysRepository implements IActivationKeysRepository {
       throw error;
     }
   }
+
+  async saveAndUpdate(id: string, data: ActivationKeyDTO): Promise<void> {
+    try {
+      await ActivationKeys.findOneAndUpdate(
+        {
+          _id: id,
+        },
+        data,
+        {
+          upsert: true,
+        }
+      );
+      console.log(`[actKey: ${id}] - Saved activation key!`);
+    } catch (error) {
+      console.error(
+        `[actKey: ${id}] - Error saving activation key state.`,
+        error
+      );
+      throw error;
+    }
+  }
 }
 export { ActivationKeysRepository };

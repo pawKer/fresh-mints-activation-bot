@@ -1,12 +1,20 @@
 import { DiscordClient, MongoResultActivationKeys } from "../@types/bot";
 import BotConstants from "./utils/bot-constants";
 const deactivateServer = async (
-  serverId: string,
+  actKey: MongoResultActivationKeys,
   client: DiscordClient
 ): Promise<void> => {
-  await client.serverSettingsRepo.save(serverId, {
+  if (!actKey.serverId) return;
+  await client.serverSettingsRepo.save(actKey.serverId, {
     activated: false,
     areScheduledMessagesOn: false,
+  });
+
+  // Setting used to false -> this means the key can be used again
+  // but only on one server at a time
+  await client.activationKeysRepo.saveAndUpdate(actKey._id, {
+    userId: actKey.userId,
+    used: false,
   });
 };
 const checkUsersAreStillVerified = async (
@@ -29,16 +37,25 @@ const checkUsersAreStillVerified = async (
 
     if (!member) {
       console.log(
-        `User [${actKey.userId}] no longer found. Deactivating server.`
+        `User [${actKey.userId}] no longer found. Deactivating server: ${actKey.serverId}.`
       );
-      await deactivateServer(actKey.serverId, client);
+      try {
+        await deactivateServer(actKey, client);
+      } catch (e) {
+        console.error(`Failed to deactivate server ${actKey.serverId}`, e);
+      }
+
       continue;
     }
     if (!member.roles.cache.has(BotConstants.VERIFIED_ROLE_ID)) {
       console.log(
         `User [${actKey.userId}] no longer has role. Deactivating server.`
       );
-      await deactivateServer(actKey.serverId, client);
+      try {
+        await deactivateServer(actKey, client);
+      } catch (e) {
+        console.error(`Failed to deactivate server ${actKey.serverId}`, e);
+      }
     }
   }
 };
