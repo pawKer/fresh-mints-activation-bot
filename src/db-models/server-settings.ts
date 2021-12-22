@@ -24,6 +24,11 @@ const ServerSettingsSchema: mongoose.Schema<MongoResultServerData> =
     alertRole: String,
     guildName: String,
     contractMap: Map,
+    activated: {
+      type: Boolean,
+      default: false,
+    },
+    activatedAt: String,
   });
 
 const ServerSettings: mongoose.Model<MongoResultServerData> =

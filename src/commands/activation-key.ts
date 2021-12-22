@@ -1,7 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildMember } from "discord.js";
 import { Command, MongoResultActivationKeys } from "../../@types/bot";
-import { getPongEmbed } from "../embeds/embeds";
 import crypto from "crypto";
 
 const serverPingCommand: Command = {
@@ -13,12 +12,12 @@ const serverPingCommand: Command = {
 
     // Try to find existing key
     try {
-      const existingKey = (await client.activationKeysRepo.find(
+      const existingKey = (await client.activationKeysRepo.findByUserId(
         member.id
       )) as MongoResultActivationKeys;
       if (existingKey) {
         await interaction.reply({
-          content: `Your activation key is \`${existingKey.activationKey}\`.`,
+          content: `Your activation key is \`${existingKey._id}\`.`,
           ephemeral: true,
         });
         return;
@@ -36,8 +35,8 @@ const serverPingCommand: Command = {
     // If no existing key found, create a new one
     const activationKey = crypto.randomUUID();
     try {
-      await client.activationKeysRepo.save(member.id, {
-        activationKey: activationKey,
+      await client.activationKeysRepo.save(activationKey, {
+        userId: member.id,
         used: false,
       });
     } catch (e) {
@@ -51,7 +50,7 @@ const serverPingCommand: Command = {
     }
 
     await interaction.reply({
-      content: `Your activation key is \`${activationKey}\`.`,
+      content: `Your activation key is \`${activationKey}\``,
       ephemeral: true,
     });
   },

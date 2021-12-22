@@ -1,5 +1,5 @@
 export interface ActivationKeyDTO {
-  activationKey: string;
+  userId: string;
   serverId?: string;
   used: boolean;
   activatedAt?: string;

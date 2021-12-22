@@ -1,17 +1,32 @@
-import { MongoResultActivationKeys } from "../../@types/bot";
+import { ActivationKeyDTO, MongoResultActivationKeys } from "../../@types/bot";
 import { IActivationKeysRepository } from "../../@types/bot/IActivationKeysRepository";
 import { ActivationKeys } from "../db-models/activation-keys";
 
 class ActivationKeysRepository implements IActivationKeysRepository {
-  async save(id: string, data: any): Promise<void> {
+  async findByUserId(
+    userId: string
+  ): Promise<MongoResultActivationKeys | null> {
+    let res: MongoResultActivationKeys | null;
+    try {
+      res = (await ActivationKeys.findOne({
+        userId: userId,
+      })) as MongoResultActivationKeys;
+      console.log(`[user: ${userId}] - Fetched data from DB`);
+      return res;
+    } catch (error) {
+      console.error(`user: ${userId}`, error);
+      throw error;
+    }
+  }
+  async save(id: string, data: ActivationKeyDTO): Promise<void> {
     try {
       await ActivationKeys.create({
         _id: id,
         ...data,
       });
-      console.log(`[user: ${id}] - Created new activation key!`);
+      console.log(`[user: ${data.userId}] - Created new activation key!`);
     } catch (error) {
-      console.error(`user: ${id}`, error);
+      console.error(`user: ${data.userId}`, error);
       throw error;
     }
   }
