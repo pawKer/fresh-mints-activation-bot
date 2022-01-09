@@ -3,4 +3,4 @@ services:
   discord-bot:
     build:
       context: .
-      dockerfile: Dockerfile-pi
+      dockerfile: Dockerfile-pi3b
