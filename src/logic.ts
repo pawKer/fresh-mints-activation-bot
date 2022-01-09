@@ -29,7 +29,7 @@ const checkUsersAreStillVerified = async (
     );
     return;
   }
-  const guild = await client.guilds.fetch(BotConstants.TEST_GUILD_ID);
+  const guild = await client.guilds.fetch(BotConstants.GUILD_ID);
   for (const actKey of usedActivationKeys) {
     const member = await guild.members.fetch(actKey.userId);
     if (!actKey.serverId) continue;
