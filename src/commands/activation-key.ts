@@ -37,6 +37,7 @@ const serverPingCommand: Command = {
     try {
       await client.activationKeysRepo.save(activationKey, {
         userId: member.id,
+        userName: member.user.tag,
         used: false,
       });
     } catch (e) {
