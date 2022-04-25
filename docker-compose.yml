@@ -3,3 +3,4 @@ services:
   activation-keys-discord-bot:
     build: .
     container_name: activation-keys
+    restart: unless-stopped

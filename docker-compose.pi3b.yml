@@ -4,4 +4,4 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-pi3b
-    restart: always
+    restart: unless-stopped
