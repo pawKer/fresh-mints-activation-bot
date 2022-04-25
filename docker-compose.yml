@@ -1,4 +1,5 @@
 version: "3.9"
 services:
-  discord-bot:
+  activation-keys-discord-bot:
     build: .
+    container_name: activation-keys
