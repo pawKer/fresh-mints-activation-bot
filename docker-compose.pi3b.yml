@@ -1,6 +1,8 @@
 version: "3.9"
 services:
-  discord-bot:
+  activation-keys-discord-bot:
     build:
       context: .
       dockerfile: Dockerfile-pi3b
+    container_name: activation-keys
+    restart: unless-stopped
