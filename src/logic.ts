@@ -31,22 +31,27 @@ const checkUsersAreStillVerified = async (
   }
   const guild = await client.guilds.fetch(BotConstants.GUILD_ID);
   for (const actKey of usedActivationKeys) {
-    const member = await guild.members.fetch(actKey.userId);
-    if (!actKey.serverId) continue;
-    if (member.id === BotConstants.OWNER_ID) continue;
+    if (actKey.userId === BotConstants.OWNER_ID) continue;
 
-    if (!member) {
-      console.log(
-        `User [${actKey.userId}] no longer found. Deactivating server: ${actKey.serverId}.`
-      );
-      try {
-        await deactivateServer(actKey, client);
-      } catch (e) {
-        console.error(`Failed to deactivate server ${actKey.serverId}`, e);
-      }
-
+    let member;
+    try {
+      member = await guild.members.fetch(actKey.userId);
+    } catch (e) {
+      // Member is no longer in server
+      await handleUserNotInServer(actKey, client);
       continue;
     }
+
+    if (!actKey.serverId) {
+      console.error(`[${actKey._id}] Server id not set for activation key`);
+      continue;
+    }
+
+    if (!member) {
+      await handleUserNotInServer(actKey, client);
+      continue;
+    }
+
     if (!member.roles.cache.has(BotConstants.VERIFIED_ROLE_ID)) {
       console.log(
         `User [${actKey.userId}] no longer has role. Deactivating server.`
@@ -57,6 +62,20 @@ const checkUsersAreStillVerified = async (
         console.error(`Failed to deactivate server ${actKey.serverId}`, e);
       }
     }
+  }
+};
+
+const handleUserNotInServer = async (
+  actKey: MongoResultActivationKeys,
+  client: DiscordClient
+) => {
+  console.log(
+    `User [${actKey.userId}] no longer found. Deactivating server: ${actKey.serverId}.`
+  );
+  try {
+    await deactivateServer(actKey, client);
+  } catch (e) {
+    console.error(`Failed to deactivate server ${actKey.serverId}`, e);
   }
 };
 

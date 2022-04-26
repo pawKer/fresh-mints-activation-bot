@@ -10,7 +10,7 @@ const readyEvent = {
     client?.user?.setActivity("Candy Crush");
     console.log(`Loaded ${client.commands.size} commands.`);
 
-    const checkUsers = new cron.CronJob("0 * * * *", async () => {
+    const checkUsers = new cron.CronJob("*/45 * * * *", async () => {
       await checkUsersAreStillVerified(client);
     });
     checkUsers.start();
